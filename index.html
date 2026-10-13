@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAD DARŚANA - Cosmic Galaxy Quest</title>
+    <script src="https://tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        space: {
+                            950: '#02000a', 900: '#040114', 800: '#090426',
+                            700: '#130a43', accent: '#8b5cf6', glow: '#d8b4fe',
+                            cyan: '#06b6d4', neon: '#22d3ee'
+                        }
+                    },
+                    animation: {
+                        'spin-slow': 'spin 40s linear infinite',
+                        'pulse-glow': 'pulseGlow 3.5s ease-in-out infinite',
+                        'float-human': 'humanFloat 4.5s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: { '0%, 100%': { opacity: 0.25, transform: 'scale(1)' }, '50%': { opacity: 0.65, transform: 'scale(1.06)' } },
+                        humanFloat: { '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' }, '50%': { transform: 'translateY(-12px) rotate(1.5deg)' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <link href="https://googleapis.com" rel="stylesheet">
+    <script src="https://jsdelivr.net"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #040114; color: #f8fafc; overflow-x: hidden; }
+        .cinzel { font-family: 'Cinzel', serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #040114; }
+        ::-webkit-scrollbar-thumb { background: #8b5cf6; border-radius: 10px; }
+        .glass-header { background: rgba(4, 1, 20, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(6, 182, 212, 0.2); }
+        .glass-panel { background: rgba(9, 4, 38, 0.5); backdrop-filter: blur(16px); border: 1px solid rgba(139, 92, 246, 0.25); box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.7); }
+        .glass-card { background: rgba(19, 10, 67, 0.25); backdrop-filter: blur(12px); border: 1px solid rgba(6, 182, 212, 0.15); transition: all 0.4s ease; }
+        .glass-card:hover { border-color: rgba(34, 211, 238, 0.6); box-shadow: 0 0 30px rgba(6, 182, 212, 0.4); transform: translateY(-5px); }
+        .text-glow-purple { text-shadow: 0 0 25px rgba(139, 92, 246, 0.75); }
+        .text-glow-cyan { text-shadow: 0 0 20px rgba(6, 182, 212, 0.8); }
+        canvas#starfield { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none; }
+    </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between selection:bg-cyan-500 selection:text-space-950">
+    <canvas id="starfield"></canvas>
+    <div class="fixed top-1/4 left-10 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+    <div class="fixed bottom-1/4 right-10 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow" style="animation-delay: 1.8s;"></div>
+
+    <header class="sticky top-0 z-50 glass-header px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="w-11 h-11 rounded-xl cosmic-gradient flex items-center justify-center shadow-lg shadow-purple-500/40 animate-float-human"><i class="fa-solid fa-shuttle-space text-white text-lg"></i></div>
+                <div>
+                    <h1 class="cinzel font-black text-xl tracking-wider text-white text-glow-cyan">SAD DARŚANA</h1>
+                    <p class="text-[10px] text-space-glow font-medium uppercase tracking-widest">The Golden Wisdom Quest • Kelompok 3</p>
+                </div>
+            </div>
+            <nav class="flex flex-wrap justify-center items-center gap-1.5 bg-space-950/60 p-1.5 rounded-2xl border border-space-700/40">
+                <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-space-cyan text-space-950 shadow-lg">Beranda</button>
+                <button onclick="switchTab('petunjuk')" id="nav-petunjuk" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium transition-all text-purple-200 hover:text-white">Petunjuk</button>
+                <button onclick="switchTab('tujuan')" id="nav-tujuan" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium transition-all text-purple-200 hover:text-white">Tujuan</button>
+                <button onclick="switchTab('peta')" id="nav-peta" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium transition-all text-purple-200 hover:text-white">Peta Konsep</button>
+                <button onclick="switchTab('materi')" id="nav-materi" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium transition-all text-purple-200 hover:text-white">Materi</button>
+                <button onclick="switchTab('game')" id="nav-game" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium transition-all text-purple-200 hover:text-white">Final Quest</button>
+                <button onclick="switchTab('hasil')" id="nav-hasil" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium transition-all text-purple-200 hover:text-white">Hasil Skor</button>
+                <button onclick="switchTab('refleksi')" id="nav-refleksi" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium transition-all text-purple-200 hover:text-white">Refleksi</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 lg:px-8 py-6 flex-grow relative z-10 w-full">
+        <div id="home" class="tab-content transition-all">
+            <div class="glass-panel rounded-3xl p-8 max-w-3xl mx-auto text-center mt-6 border-space-cyan/30 relative overflow-hidden">
+                <span class="text-xs bg-space-accent/20 border border-space-accent/40 text-space-glow px-4 py-1.5 rounded-full font-bold uppercase tracking-widest text-glow-purple">Multimedia Pembelajaran Interaktif</span>
+                <h2 class="cinzel text-4xl lg:text-5xl font-black text-white mt-6 mb-3 tracking-wide leading-tight">THE GOLDEN WISDOM QUEST</h2>
+                <p class="text-space-neon font-bold text-xs uppercase tracking-widest mb-6">Menjelajahi Enam Sistem Filsafat Hindu Melalui Petualangan Kosmik</p>
+                <p class="text-purple-100 text-sm max-w-xl mx-auto leading-relaxed mb-8">Selamat datang di gerbang dimensi pengetahuan suci. Siapkan dirimu, Penjelajah! Kita akan mengarungi samudra kosmik untuk menyingkap rahasia kebenaran sejati dari ajaran Astika dan pemikiran para Maharsi agung.</p>
+                <button onclick="switchTab('petunjuk')" class="bg-space-cyan hover:bg-cyan-400 text-space-950 px-6 py-3 rounded-xl font-bold shadow-lg shadow-cyan-500/30 text-xs mx-auto">Mulai Petualangan <i class="fa-solid fa-rocket ml-2 animate-bounce"></i></button>
+            </div>
+        </div>
+
+        <div id="petunjuk" class="tab-content hidden transition-all">
+            <div class="glass-panel rounded-3xl p-6 max-w-2xl mx-auto border-purple-500/30 text-xs">
+                <h2 class="cinzel text-2xl font-bold text-white mb-6 text-glow-purple text-center">Protokol Kendali Penjelajah</h2>
+                <div class="space-y-4">
+                    <div class="flex items-start bg-space-900/50 p-4 rounded-xl border border-space-700/30"><div class="bg-space-cyan/20 text-space-neon font-bold px-3 py-1 rounded-lg mr-4">1</div><p class="text-purple-100"><strong class="text-white">Navigasi Linier Semesta:</strong> Gunakan menu bar di bagian atas layar untuk berpindah dimensi ruang pembelajaran secara instan tanpa tersangkut eror sistem.</p></div>
+                    <div class="flex items-start bg-space-900/50 p-4 rounded-xl border border-space-700/30"><div class="bg-space-cyan/20 text-space-neon font-bold px-3 py-1 rounded-lg mr-4">2</div><p class="text-purple-100"><strong class="text-white">Eksplorasi Rasi Bintang:</strong> Pada menu Peta Konsep, klik titik-titik simpul konstelasi rasi bintang untuk membuka bagan relasi doktrin darsana secara interaktif.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tujuan" class="tab-content hidden transition-all">
+            <div class="glass-panel rounded-3xl p-6 max-w-2xl mx-auto border-space-cyan/20 text-xs">
+                <h2 class="cinzel text-2xl font-bold text-center text-white mb-6 text-glow-cyan">Indikator Kompetensi Pembelajaran</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="glass-card rounded-xl p-4"><h4 class="font-bold text-space-neon mb-2 uppercase tracking-wider">Capaian Kognitif</h4><p class="text-purple-100/90 leading-relaxed">Peserta didik mampu menganalisis secara kritis hakekat pengertian darsana dan membedakan skema aliran Astika dan Nastika dengan objektif.</p></div>
+                    <div class="glass-card rounded-xl p-4"><h4 class="font-bold text-space-neon mb-2 uppercase tracking-wider">Capaian Karakter</h4><p class="text-purple-100/90 leading-relaxed">Menumbuhkan karakter budi pekerti yang kokoh melalui internalisasi nilai-nilai kebenaran logis dan disiplin spiritual ajaran Sad Darsana.</p></div>
+                </div>
+            </div>
+        </div>
+        <div id="peta" class="tab-content hidden transition-all">
+            <div class="glass-panel rounded-3xl p-6 max-w-4xl mx-auto border-purple-500/30 text-xs">
+                <h2 class="cinzel text-2xl font-bold text-center text-white mb-2 text-glow-purple">Peta Konseptual Konstelasi Darsana</h2>
+                <div class="relative bg-space-950/60 rounded-2xl p-8 border border-space-700/40 min-h-[250px] flex flex-col justify-center items-center gap-6">
+                    <div onclick="showPetaDetail('pusat')" class="cursor-pointer bg-space-accent/30 border-2 border-space-accent text-white px-5 py-2.5 rounded-xl font-bold text-xs tracking-wider animate-pulse">🕉️ FILSAFAT DARSANA</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+                        <div onclick="showPetaDetail('astika')" class="cursor-pointer glass-card border-l-4 border-l-space-cyan rounded-xl p-4"><h4>Kelompok ASTIKA (Ortodoks)</h4><p class="text-[10px] text-purple-200/80">Aliran filsafat yang mengakui otoritas kitab suci Weda. Menaungi Sad Darsana.</p></div>
+                        <div onclick="showPetaDetail('nastika')" class="cursor-pointer glass-card border-l-4 border-l-pink-500 rounded-xl p-4"><h4>Kelompok NASTIKA (Heterodoks)</h4><p class="text-[10px] text-purple-200/80">Aliran filsafat yang menolak otoritas kitab suci Weda. Contoh: Carwaka, Jaina, Buddha.</p></div>
+                    </div>
+                    <div id="peta-info-box" class="w-full bg-space-900/80 border border-space-700/50 rounded-xl p-4 text-center hidden font-bold text-space-neon"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="materi" class="tab-content hidden transition-all">
+            <div class="glass-panel rounded-3xl p-6 max-w-5xl mx-auto border-space-cyan/20 mb-6 text-xs leading-relaxed">
+                <h2 class="cinzel text-2xl font-bold text-white mb-3 text-glow-cyan text-center">Eksplorasi Doktrin Filsafat Hindu</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="bg-space-950/40 p-4 rounded-2xl"><strong>Hakekat Pengertian Darsana:</strong> Bersumber dari akar kata Sanskerta <em>Drs</em> (melihat/memandang). Darsana diartikan sebagai pandangan hidup atau kebenaran sejati yang disaksikan melalui penglihatan batin oleh para Maharsi agung.</div>
+                    <div class="bg-space-950/40 p-4 rounded-2xl"><strong>Klasifikasi Aliran:</strong> Poros <em>Astika</em> (ortodoks) menerima legalitas hukum keagamaan Weda. Poros <em>Nastika</em> (heterodoks) menolak otoritas Weda. Enam sistem Sad Darsana tergolong kelompok Astika.</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto text-xs">
+                <div class="glass-card rounded-2xl p-5 flex flex-col h-full justify-between">
+                    <div><h4 class="font-bold text-base text-white mb-1">1. Nyaya Darsana</h4><p class="text-purple-200/90 leading-relaxed">Dirintis oleh <strong>Aksapada Resi Gautama</strong>. Berfokus pada logika, epistemologi, serta analisis kritis. Mengakui 4 sumber pengetahuan sahih (Pramana): Pratyaksa, Anumana, Upamana, dan Sabda.</p></div>
+                    <div class="pt-2 border-t border-space-700/40 font-bold text-space-cyan uppercase text-[10px] mt-3">Fokus: Logika & Analisis</div>
+                </div>
+                <div class="glass-card rounded-2xl p-5 flex flex-col h-full justify-between">
+                    <div><h4 class="font-bold text-base text-white mb-1">2. Vaisasika Darsana</h4><p class="text-purple-200/90 leading-relaxed">Dirintis oleh <strong>Resi Kanada</strong>. Mengulas kosmologi fisik jagat raya. Memelopori teori atom (Paramanu), menyatakan materi dibentuk dari perpaduan atom unsur alam yang abadi.</p></div>
+                    <div class="pt-2 border-t border-space-700/40 font-bold text-space-cyan uppercase text-[10px] mt-3">Fokus: Kosmologi Atomik</div>
+                </div>
+                <div class="glass-card rounded-2xl p-5 flex flex-col h-full justify-between">
+                    <div><h4 class="font-bold text-base text-white mb-1">3. Samkhya Darsana</h4><p class="text-purple-200/90 leading-relaxed">Dirintis oleh <strong>Resi Kapila</strong>. Filsafat dualistik tertua. Mengajarkan asal mula penciptaan semesta digerakkan interaksi antara Purusa (jiwa murni) dan Prakrti (materi asal fisik).</p></div>
+                    <div class="pt-2 border-t border-space-700/40 font-bold text-space-cyan uppercase text-[10px] mt-3">Fokus: Dualisme Metafisika</div>
+                </div>
+                <div class="glass-card rounded-2xl p-5 flex flex-col h-full justify-between">
+                    <div><h4 class="font-bold text-base text-white mb-1">4. Yoga Darsana</h4><p class="text-purple-200/90 leading-relaxed">Dirintis oleh <strong>Maharsi Patanjali</strong> lewat Kitab Yoga Sutra. Aplikasi praktis teori Samkhya melalui disiplin pengekangan riak pikiran (Citta wrtti nirodha) via delapan tangga Astanga Yoga.</p></div>
+                    <div class="pt-2 border-t border-space-700/40 font-bold text-space-cyan uppercase text-[10px] mt-3">Fokus: Disiplin Meditasi</div>
+                </div>
+                <div class="glass-card rounded-2xl p-5 flex flex-col h-full justify-between">
+                    <div><h4 class="font-bold text-base text-white mb-1">5. Mimamsa Darsana</h4><p class="text-purple-200/90 leading-relaxed">Dirintis oleh <strong>Resi Jaimini</strong> (Purwa Mimamsa). Memfokuskan kajian pada bagian ritual (Karma Kanda) Weda. Menegaskan pentingnya pelaksanaan upacara keagamaan susila dan Dharma.</p></div>
+                    <div class="pt-2 border-t border-space-700/40 font-bold text-space-cyan uppercase text-[10px] mt-3">Fokus: Ritual & Hukum Dharma</div>
+                </div>
+                <div class="glass-card rounded-2xl p-5 flex flex-col h-full justify-between">
+                    <div><h4 class="font-bold text-base text-white mb-1">6. Vedanta Darsana</h4><p class="text-purple-200/90 leading-relaxed">Dirintis oleh <strong>Resi Badarayana</strong> lewat Brahma Sutra (Uttara Mimamsa). Mengupas teologi tertinggi mengenai hakikat sejati Brahman (Tuhan), Atman (jiwa), dan belenggu Maya.</p></div>
+                    <div class="pt-2 border-t border-space-700/40 font-bold text-space-cyan uppercase text-[10px] mt-3">Fokus: Teologi & Monisme</div>
+                </div>
+            </div>
+        </div>
+        <div id="game" class="tab-content hidden transition-all">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-5xl mx-auto text-xs">
+                <div class="lg:col-span-1 flex flex-col gap-4">
+                    <div class="glass-panel rounded-2xl p-4 text-center">
+                        <h4 class="font-bold text-sm text-white">Status Penjelajah</h4>
+                        <p class="text-[10px] text-space-glow uppercase tracking-wider font-semibold">Semesta Level 1</p>
+                        <div class="w-full bg-space-950 rounded-full h-1.5 mt-2 overflow-hidden"><div class="bg-space-cyan h-1.5 w-1/3 shadow-lg"></div></div>
+                    </div>
+                    <div class="glass-panel rounded-2xl p-4 text-center">
+                        <h4 class="font-bold text-xs text-white mb-2 uppercase text-glow-cyan">Misi: Sortir Aliran</h4>
+                        <div class="bg-space-950/60 p-3 rounded-xl text-center mb-3"><span id="game-target-text" class="font-bold text-space-neon">Nyaya Darsana</span></div>
+                        <div class="grid grid-cols-2 gap-2 font-bold"><button onclick="playMiniGame('Astika')" class="bg-space-cyan/20 border border-space-cyan py-1.5 rounded-lg text-white">ASTIKA</button><button onclick="playMiniGame('Nastika')" class="bg-pink-500/20 border border-pink-500 py-1.5 rounded-lg text-white">NASTIKA</button></div>
+                        <p id="game-feedback" class="text-[10px] font-bold mt-2 text-space-gold"></p>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 glass-panel rounded-2xl p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3 bg-space-950/40 px-3 py-1.5 rounded-xl"><span id="quiz-progress" class="text-[10px] font-bold text-space-glow uppercase">Soal 1 dari 10</span></div>
+                        <div class="bg-space-950/20 p-3 rounded-xl mb-3"><h3 id="quiz-question-text" class="font-bold text-white leading-relaxed">Siapakah tokoh Maharsi agung yang merintis ajaran sistem logika Nyaya Darsana?</h3></div>
+                        <div class="space-y-2 text-xs">
+                            <button onclick="checkQuizAnswer(0)" class="w-full text-left bg-space-800/30 border border-space-700/50 p-2.5 rounded-xl flex items-center"><span class="w-5 h-5 rounded bg-space-700 flex items-center justify-center mr-3 font-bold">A</span><span id="opt-text-0">Resi Kapila</span></button>
+                            <button onclick="checkQuizAnswer(1)" class="w-full text-left bg-space-800/30 border border-space-700/50 p-2.5 rounded-xl flex items-center"><span class="w-5 h-5 rounded bg-space-700 flex items-center justify-center mr-3 font-bold">B</span><span id="opt-text-1">Resi Gautama</span></button>
+                            <button onclick="checkQuizAnswer(2)" class="w-full text-left bg-space-800/30 border border-space-700/50 p-2.5 rounded-xl flex items-center"><span class="w-5 h-5 rounded bg-space-700 flex items-center justify-center mr-3 font-bold">C</span><span id="opt-text-2">Resi Kanada</span></button>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex justify-between items-center pt-2 border-t border-space-700/40"><span id="quiz-feedback" class="font-bold"></span><button onclick="nextQuizQuestion()" id="next-quiz-btn" class="hidden bg-space-cyan text-space-950 font-bold px-3 py-1 rounded text-xs">Berikutnya</button></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="hasil" class="tab-content hidden transition-all">
+            <div class="glass-panel rounded-3xl p-6 max-w-md mx-auto text-center text-xs">
+                <h2 class="cinzel text-2xl font-bold text-white mb-4 text-glow-cyan">Papan Skor Akumulasi</h2>
+                <div class="bg-space-950/60 rounded-xl p-4 border border-space-700/40 space-y-3 mb-4">
+                    <div class="flex justify-between border-b border-space-700/30 pb-2"><span>Total Benar Kuis:</span><span id="score-correct-count" class="font-bold text-white">0 Soal</span></div>
+                    <div class="flex justify-between border-b border-space-700/30 pb-2"><span>Skor Akhir Evaluasi:</span><span id="score-final-value" class="font-bold text-space-neon text-sm">0 / 100</span></div>
+                    <div class="flex justify-between"><span>Misi Game Diselesaikan:</span><span id="score-game-count" class="font-bold text-space-gold">0 Poin</span></div>
+                </div>
+                <button onclick="resetEvaluationData()" class="bg-space-900/50 border border-space-700/50 px-3 py-1.5 rounded-xl text-[10px]">Reset Data Nilai</button>
+            </div>
+        </div>
+
+        <div id="refleksi" class="tab-content hidden transition-all">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto text-xs">
+                <div class="md:col-span-1 glass-panel rounded-2xl p-4"><h3 class="cinzel font-bold text-white mb-2">Jurnal Refleksi</h3><textarea placeholder="Ketik jurnal batin refleksi kamu..." class="w-full h-24 bg-space-950/80 border border-space-700/50 rounded-xl p-2 text-xs focus:outline-none mb-2 resize-none"></textarea><button onclick="confetti()" class="w-full cosmic-gradient text-white font-bold py-1.5 rounded-xl">Kirim Jurnal</button></div>
+                <div class="md:col-span-2 glass-panel rounded-2xl p-4 border-purple-500/20">
+                    <h3 class="cinzel font-bold text-center text-white mb-3">Dewan Formasi Pengembang Kelompok 3</h3>
+                    <div class="overflow-x-auto text-[10px]"><table class="w-full text-left"><tbody class="text-purple-100 font-medium divide-y divide-space-800/40">
+                        <tr><td class="py-1">1</td><td class="py-1 font-semibold text-white">I Dewa Ayu Hanny Pradnya Nitaswari</td><td class="text-center text-space-neon">(10)</td></tr>
+                        <tr><td class="py-1">2</td><td class="py-1 font-semibold text-white">Kadek Anindya Citra Kirana</td><td class="text-center text-space-neon">(26)</td></tr>
+                        <tr><td class="py-1">3</td><td class="py-1 font-semibold text-white">Anak Agung Sri Ambarawati</td><td class="text-center text-space-neon">(01)</td></tr>
+                        <tr><td class="py-1">4</td><td class="py-1 font-semibold text-white">Putu Octhaviyanti</td><td class="text-center text-space-neon">(42)</td></tr>
+                        <tr><td class="py-1">5</td><td class="py-1 font-semibold text-white">Ni Putu Wulan Kusumayanti</td><td class="text-center text-space-neon">(39)</td></tr>
+                        <tr><td class="py-1">6</td><td class="py-1 font-semibold text-white">Putu Citra Rasmini</td><td class="text-center text-space-neon">(41)</td></tr>
+                        <tr><td class="py-1">7</td><td class="py-1 font-semibold text-white">Ni Made Putri Swandini</td><td class="text-center text-space-neon">(35)</td></tr>
+                        <tr><td class="py-1">8</td><td class="py-1 font-semibold text-white">I Putu Galang Aditya</td><td class="text-center text-space-neon">(25)</td></tr>
+                    </tbody></table></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="fixed bottom-5 right-5 z-50 flex flex-col items-end space-y-1.5 pointer-events-none md:pointer-events-auto group">
+        <div id="avatar-bubble" class="speech-bubble text-[10px] text-cyan-200 px-3 py-1.5 rounded-xl max-w-[150px] text-center opacity-0 transform translate-y-2 transition-all font-bold">Halo! Aku Astro-Resi.</div>
+        <div class="w-14 h-16 cursor-pointer pointer-events-auto animate-float-human" onclick="switchTab('game')">
+            <svg viewBox="0 0 200 200" xmlns="http://w3.org"><circle cx="100" cy="170" r="10" fill="#22d3ee" opacity="0.5"/><rect x="68" y="75" width="64" height="65" rx="12" fill="#0c0733" stroke="#8b5cf6" stroke-width="4"/><circle cx="100" cy="110" r="42" fill="#f8fafc" stroke="#8b5cf6" stroke-width="5"/><rect x="74" y="84" width="52" height="36" rx="12" fill="#040114" stroke="#22d3ee" stroke-width="3"/><path d="M 80 90 Q 95 82 112 92" stroke="#22d3ee" stroke-width="2" fill="none"/><circle cx="92" cy="100" r="3.5" fill="#a855f7"/><circle cx="108" cy="100" r="3.5" fill="#a855f7"/></svg>
+        </div>
+    </div>
+
+    <script>
+        const bankSoal = [
+            { q: "Siapakah tokoh Maharsi agung yang merintis ajaran sistem logika Nyaya Darsana?", a: ["Resi Kapila", "Resi Gautama", "Resi Kanada"], c: 1 },
+            { q: "Sistem filsafat yang memelopori kosmologi alam semesta berdasarkan teori atom (Paramanu) adalah...", a: ["Nyaya Darsana", "Yoga Darsana", "Vaisasika Darsana"], c: 2 },
+            { q: "Menurut ajaran Samkhya Darsana, dua asas mandiri and abadi yang menggerakkan penciptaan alam adalah...", a: ["Brahman & Atman", "Purusa & Prakrti", "Dharma & Adharma"], c: 1 },
+            { q: "Kitab Yoga Sutra yang menjadi landasan utama sistem disiplin meditasi Yoga dirintis oleh...", a: ["Maharsi Patanjali", "Resi Jaimini", "Resi Gautama"], c: 0 },
+            { q: "Aliran Mimamsa Darsana yang didirikan oleh Resi Jaimini menitikberatkan fokus kajiannya pada...", a: ["Logika pembuktian", "Meditasi batin", "Ritual Weda & Hukum Dharma"], c: 2 },
+            { q: "Poros filsafat tertinggi yang mengkaji esensi teologi monisme Brahman dan Atman adalah...", a: ["Vedanta Darsana", "Vaisasika Darsana", "Samkhya Darsana"], c: 0 },
+            { q: "Kata Darsana bersumber dari akar kata Sanskerta 'Drs' yang memiliki arti logis yaitu...", a: ["Mendengar kitab", "Melihat atau Memandang", "Melakukan ritual"], c: 1 },
+            { q: "Kelompok aliran filsafat India yang mutlak menolak legalitas dan otoritas kitab suci Weda disebut...", a: ["Astika", "Nastika", "Sad Darsana"], c: 1 },
+{ q: "Manakah di bawah ini yang termasuk salah satu contoh aliran filsafat kelompok Nastika?", a: ["Nyaya", "Yoga", "Bauddha (Buddha)"], c: 2 },
+{ q: "Sistem filsafat Nyaya mengakui berapa sumber saluran pengetahuan sahih (Pramana)?", a: ["2 Pramana", "4 Pramana", "6 Pramana"], c: 1 }
+];
+let currentQuizIndex = 0; let totalScoreBenar = 0; let gameScorePoin = 0; let gameIndex = 0;
+const listTargetGame = [{ text: "Nyaya Darsana", type: "Astika" }, { text: "Aliran Carwaka", type: "Nastika" }, { text: "Yoga Darsana", type: "Astika" }];
+function switchTab(tabId) {
+document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+const target = document.getElementById(tabId);
+if (target) target.classList.remove('hidden');
+document.querySelectorAll('.nav-btn').forEach(b => b.className = "nav-btn px-3 py-1.5 rounded-xl text-xs font-medium transition-all text-purple-200 hover:text-white hover:bg-white/5");
+const activeBtn = document.getElementById('nav-' + tabId);
+if (activeBtn) activeBtn.className = "nav-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-space-cyan text-space-950 shadow-lg shadow-cyan-500/20";
+const bubble = document.getElementById('avatar-bubble');
+if (bubble) {
+const teks = { home: "Orbit utama aktif!", petunjuk: "Pahami kendali semesta.", tujuan: "Ini target capaian materi.", peta: "Konstelasi rasi interaktif!", materi: "Modul 6 Sad Darsana terbuka.", game: "Mulai petualangan kuis!", hasil: "Skor terekam di sistem.", refleksi: "Jurnal Kelompok 3." };
+bubble.innerText = teks[tabId] || "Semangat belajar!";
+bubble.classList.remove('opacity-0', 'translate-y-2');
+setTimeout(() => bubble.classList.add('opacity-0', 'translate-y-2'), 3050);
+}
+}
+function showPetaDetail(k) {
+const b = document.getElementById('peta-info-box'); b.classList.remove('hidden');
+if (k === 'pusat') b.innerText = "SAD DARSANA: Enam poros filsafat ortodoks Weda.";
+else if (k === 'astika') b.innerText = "ASTIKA: Aliran pengaku Weda (Nyaya, Vaisasika, Samkhya, Yoga, Mimamsa, Vedanta).";
+else if (k === 'nastika') b.innerText = "NASTIKA: Aliran penolak Weda (Carwaka, Jaina, Buddha).";
+}
+function playMiniGame(ans) {
+const f = document.getElementById('game-feedback');
+if (ans === listTargetGame[gameIndex].type) { gameScorePoin += 25; f.innerText = "Benar! +25 Poin"; f.className = "text-[10px] font-bold mt-2 text-emerald-400"; confetti({ particleCount: 30 }); }
+else { f.innerText = "Target Salah!"; f.className = "text-[10px] font-bold mt-2 text-red-400"; }
+gameIndex = (gameIndex + 1) % listTargetGame.length;
+document.getElementById('game-target-text').innerText = listTargetGame[gameIndex].text;
+document.getElementById('score-game-count').innerText = gameScorePoin + " Poin";
+}
+function renderQuizQuestion() {
+const d = bankSoal[currentQuizIndex];
+document.getElementById('quiz-progress').innerText = Soal ${currentQuizIndex + 1} dari ${bankSoal.length};
+document.getElementById('quiz-question-text').innerText = d.q;
+document.getElementById('opt-text-0').innerText = d.a[0];
+document.getElementById('opt-text-1').innerText = d.a[1];
+document.getElementById('opt-text-2').innerText = d.a[2];
+document.getElementById('quiz-feedback').innerText = "";
+document.getElementById('next-quiz-btn').classList.add('hidden');
+}
+function checkQuizAnswer(idx) {
+const d = bankSoal[currentQuizIndex]; const f = document.getElementById('quiz-feedback');
+if (idx === d.c) { totalScoreBenar++; f.innerText = "Kebenaran Tepat! 🎉"; f.className = "text-[11px] font-bold text-emerald-400"; confetti({ particleCount: 30 }); }
+else { f.innerText = "Sinyal Terdistorsi!"; f.className = "text-[11px] font-bold text-red-400"; }
+document.getElementById('next-quiz-btn').classList.remove('hidden');
+document.getElementById('score-correct-count').innerText = ${totalScoreBenar} Soal;
+document.getElementById('score-final-value').innerText = ${Math.round((totalScoreBenar / bankSoal.length) * 100)} / 100;
+}
+function nextQuizQuestion() {
+if (currentQuizIndex < bankSoal.length - 1) { currentQuizIndex++; renderQuizQuestion(); }
+else { document.getElementById('quiz-question-text').innerText = "QUEST FINISHED! Soal berhasil ditaklukkan."; document.getElementById('next-quiz-btn').classList.add('hidden'); }
+}
+function resetEvaluationData() {
+currentQuizIndex = 0; totalScoreBenar = 0; gameScorePoin = 0; gameIndex = 0;
+document.getElementById('score-correct-count').innerText = "0 Soal"; document.getElementById('score-final-value').innerText = "0 / 100"; document.getElementById('score-game-count').innerText = "0 Poin";
+renderQuizQuestion(); switchTab('home');
+}
+renderQuizQuestion();
+const canvas = document.getElementById('starfield'); const ctx = canvas.getContext('2d'); let stars = [];
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeCanvas); resizeCanvas();
+for (let i = 0; i < 90; i++) stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.5, speed: Math.random() * 0.2 + 0.05 });
+function runSpaceAnimation() {
+ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = 'rgba(6, 182, 212, 0.65)';
+stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill(); s.y += s.speed; if (s.y > canvas.height) { s.y = 0; s.x = Math.random() * canvas.width; } });
+requestAnimationFrame(runSpaceAnimation);
+}
+runSpaceAnimation();
+   </script>
+</body>
+</html>
